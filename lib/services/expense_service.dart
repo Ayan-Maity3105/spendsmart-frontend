@@ -120,4 +120,50 @@ class ExpenseService {
       return [];
     }
   }
+
+  // Search by keyword
+  Future<List<Expense>> searchExpenses(String keyword) async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/search?keyword=$keyword"),
+        headers: await getHeader(),
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonList = jsonDecode(response.body);
+        return jsonList
+            .map((json) => Expense.fromJson(json))
+            .toList();
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+// Filter by date range
+  Future<List<Expense>> filterExpenses(
+      String startDate, String endDate, {String? category}) async {
+    try {
+      String url = "$baseUrl/filter?startDate=$startDate&endDate=$endDate";
+      if (category != null && category.isNotEmpty && category != "All") {
+        url += "&category=$category";
+      }
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: await getHeader(),
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonList = jsonDecode(response.body);
+        return jsonList
+            .map((json) => Expense.fromJson(json))
+            .toList();
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
 }

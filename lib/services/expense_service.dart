@@ -166,4 +166,22 @@ class ExpenseService {
       return [];
     }
   }
+
+  // Get category summary
+  Future<Map<String, double>> getCategorySummary() async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/summary"),
+        headers: await getHeader(),
+      );
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonMap = jsonDecode(response.body);
+        return jsonMap.map((key, value) => MapEntry(key, value.toDouble()));
+      }
+      return {};
+    } catch (e) {
+      return {};
+    }
+  }
 }

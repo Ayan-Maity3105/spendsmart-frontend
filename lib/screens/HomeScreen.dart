@@ -5,6 +5,7 @@ import '../services/expense_service.dart';
 import 'LoginScreen.dart';
 import 'AddExpenseScreen.dart';
 import 'EditExpenseScreen.dart';
+import 'ChartsScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,7 +15,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   final ExpenseService expenseService = ExpenseService();
   final AuthService authService = AuthService();
 
@@ -54,10 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Search expenses
-  // Add this variable at top of state class
   DateTime? _lastSearchTime;
 
-// Replace searchExpenses method
   void searchExpenses(String keyword) async {
     _lastSearchTime = DateTime.now();
     final searchTime = _lastSearchTime;
@@ -119,9 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Colors.deepPurple,
-            ),
+            colorScheme: const ColorScheme.light(primary: Colors.deepPurple),
           ),
           child: child!,
         );
@@ -147,9 +143,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void deleteExpense(int id) async {
     bool success = await expenseService.deleteExpense(id);
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Expense deleted!")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Expense deleted!")));
       loadExpenses();
     }
   }
@@ -180,6 +176,17 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.bar_chart, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ChartsScreen(),
+                ),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: logout,
           ),
@@ -188,239 +195,230 @@ class _HomeScreenState extends State<HomeScreen> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
-        children: [
-
-          // Total card
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.deepPurple,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Total Expenses",
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
+                // Total card
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Total Expenses",
+                        style: TextStyle(color: Colors.white70, fontSize: 14),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "₹ ${totalExpenses.toStringAsFixed(2)}",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Search bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: TextField(
+                    controller: searchController,
+                    onChanged: searchExpenses,
+                    decoration: InputDecoration(
+                      hintText: "Search expenses...",
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: clearFilters,
+                            )
+                          : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Filter row
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      // Category dropdown
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: selectedCategory,
+                              isExpanded: true,
+                              items: categories.map((cat) {
+                                return DropdownMenuItem(
+                                  value: cat,
+                                  child: Text(cat),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() => selectedCategory = value!);
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+
+                      // Date range button
+                      ElevatedButton.icon(
+                        onPressed: pickDateRange,
+                        icon: const Icon(Icons.date_range, size: 16),
+                        label: Text(
+                          selectedDateRange == null
+                              ? "Date"
+                              : "${selectedDateRange!.start.day}/${selectedDateRange!.start.month} - ${selectedDateRange!.end.day}/${selectedDateRange!.end.month}",
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+
+                      // Filter button
+                      ElevatedButton(
+                        onPressed: filterExpenses,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text("Filter"),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  "₹ ${totalExpenses.toStringAsFixed(2)}",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
+
+                // Clear filter button
+                if (selectedDateRange != null || selectedCategory != "All")
+                  TextButton.icon(
+                    onPressed: clearFilters,
+                    icon: const Icon(Icons.clear, color: Colors.red),
+                    label: const Text(
+                      "Clear Filters",
+                      style: TextStyle(color: Colors.red),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
 
-          // Search bar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: TextField(
-              controller: searchController,
-              onChanged: searchExpenses,
-              decoration: InputDecoration(
-                hintText: "Search expenses...",
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: searchController.text.isNotEmpty
-                    ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: clearFilters,
-                )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Filter row
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-
-                // Category dropdown
+                // Expenses list
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: selectedCategory,
-                        isExpanded: true,
-                        items: categories.map((cat) {
-                          return DropdownMenuItem(
-                            value: cat,
-                            child: Text(cat),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() => selectedCategory = value!);
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-
-                // Date range button
-                ElevatedButton.icon(
-                  onPressed: pickDateRange,
-                  icon: const Icon(Icons.date_range, size: 16),
-                  label: Text(
-                    selectedDateRange == null
-                        ? "Date"
-                        : "${selectedDateRange!.start.day}/${selectedDateRange!.start.month} - ${selectedDateRange!.end.day}/${selectedDateRange!.end.month}",
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-
-                // Filter button
-                ElevatedButton(
-                  onPressed: filterExpenses,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text("Filter"),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          // Clear filter button
-          if (selectedDateRange != null || selectedCategory != "All")
-            TextButton.icon(
-              onPressed: clearFilters,
-              icon: const Icon(Icons.clear, color: Colors.red),
-              label: const Text(
-                "Clear Filters",
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-
-          // Expenses list
-          Expanded(
-            child: expenses.isEmpty
-                ? const Center(
-              child: Text(
-                "No expenses found!",
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 16,
-                ),
-              ),
-            )
-                : ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: expenses.length,
-              itemBuilder: (context, index) {
-                Expense expense = expenses[index];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.deepPurple[100],
-                      child: const Icon(
-                        Icons.receipt,
-                        color: Colors.deepPurple,
-                      ),
-                    ),
-                    title: Text(
-                      expense.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    subtitle: Text(
-                      "${expense.category} • ${expense.date}",
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "₹${expense.amount}",
-                          style: const TextStyle(
-                            color: Colors.deepPurple,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                  child: expenses.isEmpty
+                      ? const Center(
+                          child: Text(
+                            "No expenses found!",
+                            style: TextStyle(color: Colors.grey, fontSize: 16),
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.edit,
-                            color: Colors.blue,
-                          ),
-                          onPressed: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    EditExpenseScreen(
-                                        expense: expense),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: expenses.length,
+                          itemBuilder: (context, index) {
+                            Expense expense = expenses[index];
+                            return Card(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: Colors.deepPurple[100],
+                                  child: const Icon(
+                                    Icons.receipt,
+                                    color: Colors.deepPurple,
+                                  ),
+                                ),
+                                title: Text(
+                                  expense.title,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  "${expense.category} • ${expense.date}",
+                                ),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      "₹${expense.amount}",
+                                      style: const TextStyle(
+                                        color: Colors.deepPurple,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.edit,
+                                        color: Colors.blue,
+                                      ),
+                                      onPressed: () async {
+                                        await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditExpenseScreen(
+                                                  expense: expense,
+                                                ),
+                                          ),
+                                        );
+                                        loadExpenses();
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed: () =>
+                                          deleteExpense(expense.id),
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
-                            loadExpenses();
                           },
                         ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.delete,
-                            color: Colors.red,
-                          ),
-                          onPressed: () =>
-                              deleteExpense(expense.id),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple,
         onPressed: () async {
           await Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const AddExpenseScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const AddExpenseScreen()),
           );
           loadExpenses();
         },

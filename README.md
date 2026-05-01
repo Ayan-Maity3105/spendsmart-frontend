@@ -116,8 +116,30 @@ BackdropFilter(
   ),
 )
 ```
+## 📸 Screenshots
 
----
+<table>
+  <tr>
+    <td><img src="screenshots/register.jpeg" width="200"/></td>
+    <td><img src="screenshots/home.jpeg" width="200"/></td>
+    <td><img src="screenshots/add_expense.jpeg" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center">Login</td>
+    <td align="center">Home</td>
+    <td align="center">Add Expense</td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/chart.jpeg" width="200"/></td>
+    <td><img src="screenshots/profile.jpeg" width="200"/></td>
+    <td><img src="screenshots/edit_expense.jpeg" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center">Charts</td>
+    <td align="center">Profile</td>
+    <td align="center">Edit Expense</td>
+  </tr>
+</table>
 
 ## ⚙️ Setup & Installation
 

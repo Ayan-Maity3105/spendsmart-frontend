@@ -216,6 +216,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       physics: const NeverScrollableScrollPhysics(),
                       mainAxisSpacing: 8,
                       crossAxisSpacing: 8,
+                      childAspectRatio: 1.0,
                       children: categories.map((category) {
                         bool isSelected = selectedCategory == category;
                         Color color = categoryColors[category]!;

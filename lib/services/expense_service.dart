@@ -6,7 +6,7 @@ import 'auth_service.dart';
 import '../models/expense.dart';
 
 class ExpenseService {
-  final String baseUrl = "http://localhost:8080/api/expenses";
+  final String baseUrl = "https://spendsmart-backend-w8pw.onrender.com/api/expenses";
   final AuthService authService = AuthService();
 
   // get headers with the token

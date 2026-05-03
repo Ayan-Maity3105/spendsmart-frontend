@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  final String baseUrl = "http://localhost:8080/api/auth";
+  final String baseUrl = "https://spendsmart-backend-w8pw.onrender.com/api/auth";
 
   // register
   Future<bool> register(String name, String email, String password) async {

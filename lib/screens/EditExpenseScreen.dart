@@ -12,7 +12,6 @@ class EditExpenseScreen extends StatefulWidget {
 }
 
 class _EditExpenseScreenState extends State<EditExpenseScreen> {
-
   late TextEditingController titleController;
   late TextEditingController amountController;
   final ExpenseService expenseService = ExpenseService();
@@ -22,8 +21,13 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
   late DateTime selectedDate;
 
   final List<String> categories = [
-    "Food", "Transport", "Shopping",
-    "Education", "Health", "Entertainment", "Other",
+    "Food",
+    "Transport",
+    "Shopping",
+    "Education",
+    "Health",
+    "Entertainment",
+    "Other",
   ];
 
   final Map<String, IconData> categoryIcons = {
@@ -51,7 +55,8 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
     super.initState();
     titleController = TextEditingController(text: widget.expense.title);
     amountController = TextEditingController(
-        text: widget.expense.amount.toString());
+      text: widget.expense.amount.toString(),
+    );
     selectedCategory = widget.expense.category;
     selectedDate = DateTime.parse(widget.expense.date);
   }
@@ -65,9 +70,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF6C63FF),
-            ),
+            colorScheme: const ColorScheme.dark(primary: Color(0xFF6C63FF)),
           ),
           child: child!,
         );
@@ -139,11 +142,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF1A1A2E),
-            Color(0xFF16213E),
-            Color(0xFF0F3460),
-          ],
+          colors: [Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFF0F3460)],
         ),
       ),
       child: Scaffold(
@@ -153,10 +152,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
           elevation: 0,
           title: const Text(
             "Edit Expense",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           iconTheme: const IconThemeData(color: Colors.white),
         ),
@@ -171,14 +167,11 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.1),
-                  ),
+                  border: Border.all(color: Colors.white.withOpacity(0.1)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     // Title field
                     const Text(
                       "Title",
@@ -223,22 +216,20 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                     const SizedBox(height: 8),
 
                     // Category grid
-                    GridView.count(
-                      crossAxisCount: 4,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
                       children: categories.map((category) {
                         bool isSelected = selectedCategory == category;
                         Color color = categoryColors[category]!;
                         IconData icon = categoryIcons[category]!;
 
                         return GestureDetector(
-                          onTap: () => setState(
-                                () => selectedCategory = category,
-                          ),
+                          onTap: () =>
+                              setState(() => selectedCategory = category),
                           child: Container(
+                            width: 80,
+                            height: 80,
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? color.withOpacity(0.3)
@@ -254,18 +245,20 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(icon, color: color, size: 20),
+                                Icon(icon, color: color, size: 24),
                                 const SizedBox(height: 4),
                                 Text(
                                   category,
                                   style: TextStyle(
                                     color: isSelected ? color : Colors.white38,
-                                    fontSize: 8,
+                                    fontSize: 10,
                                     fontWeight: isSelected
                                         ? FontWeight.bold
                                         : FontWeight.normal,
                                   ),
                                   textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
@@ -338,10 +331,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                         child: Ink(
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFF6C63FF),
-                                Color(0xFF3B82F6),
-                              ],
+                              colors: [Color(0xFF6C63FF), Color(0xFF3B82F6)],
                             ),
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -349,26 +339,26 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                             alignment: Alignment.center,
                             child: isLoading
                                 ? const CircularProgressIndicator(
-                              color: Colors.white,
-                            )
-                                : const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.save_rounded,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  "Update Expense",
-                                  style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                  )
+                                : const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.save_rounded,
+                                        color: Colors.white,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        "Update Expense",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
                           ),
                         ),
                       ),

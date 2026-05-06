@@ -19,7 +19,50 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
   bool obscurePassword = true;
 
+  String? validateEmail(String email) {
+    if (email.isEmpty) return "Email cannot be empty";
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(email)) return "Enter a valid email address";
+    return null;
+  }
+
+  String? validatePassword(String password) {
+    if (password.isEmpty) return "Password cannot be empty";
+    if (password.length < 6) return "Password must be at least 6 characters";
+    return null;
+  }
+
   void login() async {
+    String? emailError = validateEmail(emailController.text.trim());
+    String? passwordError = validatePassword(passwordController.text.trim());
+
+    if (emailError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(emailError),
+          backgroundColor: Colors.red.withOpacity(0.8),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (passwordError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(passwordError),
+          backgroundColor: Colors.red.withOpacity(0.8),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+      return;
+    }
     setState(() => isLoading = true);
 
     bool success = await authService.login(

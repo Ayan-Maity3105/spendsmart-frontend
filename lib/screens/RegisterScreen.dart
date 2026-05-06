@@ -11,7 +11,6 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -19,7 +18,73 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool isLoading = false;
   bool obscurePassword = true;
 
+  // validation methods
+  String? validateName(String name) {
+    if (name.isEmpty) return "Name cannot be empty";
+    if (name.length < 3) return "Name must be at least 3 character long";
+    return null;
+  }
+
+  String? validateEmail(String email) {
+    if (email.isEmpty) return "Email cannot be empty";
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(email)) return "Enter a valid email address";
+    return null;
+  }
+
+  String? validatePassword(String password) {
+    if (password.isEmpty) return "Password cannot be empty";
+    if (password.length < 6) return "Password must be 6 characters long";
+    return null;
+  }
+
   void register() async {
+    String? nameError = validateName(nameController.text.trim());
+    String? emailError = validateEmail(emailController.text.trim());
+    String? passwordError = validatePassword(passwordController.text.trim());
+
+    if (nameError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(nameError),
+          backgroundColor: Colors.red.withOpacity(0.8),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (emailError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(emailError),
+          backgroundColor: Colors.red.withOpacity(0.8),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (passwordError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(passwordError),
+          backgroundColor: Colors.red.withOpacity(0.8),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+      return;
+    }
+
     setState(() => isLoading = true);
 
     bool success = await authService.register(
@@ -48,7 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text("Registration failed! Try again."),
+          content: const Text("Email already exists! Try another."),
           backgroundColor: Colors.red.withOpacity(0.8),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -67,11 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF1A1A2E),
-              Color(0xFF16213E),
-              Color(0xFF0F3460),
-            ],
+            colors: [Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFF0F3460)],
           ),
         ),
         child: SafeArea(
@@ -81,7 +142,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-
                   // Logo
                   Container(
                     width: 80,
@@ -117,10 +177,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 8),
                   const Text(
                     "Start tracking your expenses today!",
-                    style: TextStyle(
-                      color: Colors.white38,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white38, fontSize: 14),
                   ),
                   const SizedBox(height: 40),
 
@@ -140,7 +197,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         child: Column(
                           children: [
-
                             // Name field
                             _glassTextField(
                               controller: nameController,
@@ -165,7 +221,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               isPassword: true,
                               obscure: obscurePassword,
                               onToggle: () => setState(
-                                    () => obscurePassword = !obscurePassword,
+                                () => obscurePassword = !obscurePassword,
                               ),
                             ),
                             const SizedBox(height: 24),
@@ -197,16 +253,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     alignment: Alignment.center,
                                     child: isLoading
                                         ? const CircularProgressIndicator(
-                                      color: Colors.white,
-                                    )
+                                            color: Colors.white,
+                                          )
                                         : const Text(
-                                      "Register",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                                            "Register",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                   ),
                                 ),
                               ),
@@ -279,14 +335,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           prefixIcon: Icon(icon, color: Colors.white38),
           suffixIcon: isPassword
               ? IconButton(
-            icon: Icon(
-              obscure
-                  ? Icons.visibility_rounded
-                  : Icons.visibility_off_rounded,
-              color: Colors.white38,
-            ),
-            onPressed: onToggle,
-          )
+                  icon: Icon(
+                    obscure
+                        ? Icons.visibility_rounded
+                        : Icons.visibility_off_rounded,
+                    color: Colors.white38,
+                  ),
+                  onPressed: onToggle,
+                )
               : null,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(

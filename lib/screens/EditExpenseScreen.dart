@@ -146,6 +146,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
         ),
       ),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           backgroundColor: Colors.transparent,

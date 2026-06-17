@@ -161,6 +161,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         ),
       ),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           backgroundColor: Colors.transparent,

@@ -67,10 +67,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   }
 
   void addExpense() async {
-    if (titleController.text.isEmpty || amountController.text.isEmpty) {
+    // validate title
+    if (titleController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text("Please fill all fields!"),
+          content: const Text("Please enter a title!"),
           backgroundColor: Colors.red.withOpacity(0.8),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -79,6 +80,34 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         ),
       );
       return;
+    }
+
+    // validate amount
+    if (amountController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Please enter an amount!"),
+          backgroundColor: Colors.red.withOpacity(0.8),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+      return;
+    }
+
+    // check if amount is number
+    double? amount = double.tryParse(amountController.text.trim());
+    if(amount == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Please enter a valid amount!"),
+          backgroundColor: Colors.red.withOpacity(0.8),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
     }
 
     setState(() => isLoading = true);

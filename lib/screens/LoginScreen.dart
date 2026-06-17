@@ -106,6 +106,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
         ),
+        height: double.infinity,
+        width: double.infinity,
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
